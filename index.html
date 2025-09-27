@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ZT Tools</title>
+<style>
+html, body {
+  height:100%;
+  margin:0;
+  padding:0;
+  font-family:'Roboto',sans-serif;
+  background: url("https://i.ibb.co/791tz0h/IMG-20250925-WA0413.jpg") no-repeat center center fixed;
+  background-size:cover;
+  color:#fff;
+  overflow-x:hidden;
+}
+
+/* container spacing so footer doesn’t overlap */
+body {
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+}
+.container {
+  flex:1;
+  width:90%;
+  max-width:700px;
+  background:rgba(0,0,0,0.6);
+  padding:25px;
+  border-radius:14px;
+  box-shadow:0 0 20px rgba(192,192,192,0.3);
+  margin:30px auto 100px auto; /* bottom margin so content not hidden */
+}
+
+/* Header */
+header {
+  width:100%;
+  padding:18px;
+  background:rgba(0,0,0,0.85);
+  text-align:center;
+  font-size:26px;
+  font-weight:700;
+  color:silver;
+  text-shadow:0 0 10px #aaa, 0 0 18px #fff;
+  border-bottom:2px solid silver;
+}
+
+/* Inputs + buttons */
+input, button {
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border-radius:6px;
+  font-size:16px;
+  box-sizing:border-box;
+}
+input {
+  border:2px solid silver;
+  background:rgba(255,255,255,0.1);
+  color:#fff;
+}
+input:focus {
+  outline:none;
+  border-color:#ccc;
+  box-shadow:0 0 8px #ccc;
+}
+button {
+  background:linear-gradient(45deg,#555,#aaa);
+  color:#fff;
+  border:none;
+  cursor:pointer;
+  font-weight:500;
+  transition:0.3s;
+}
+button:hover {
+  transform:scale(1.05);
+  box-shadow:0 0 10px #aaa;
+}
+
+/* Categories + tools */
+.category {
+  background:rgba(255,255,255,0.1);
+  margin:8px 0;
+  padding:14px 20px;
+  border-radius:10px;
+  cursor:pointer;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.tools {
+  display:none;
+  flex-direction:column;
+  margin-top:8px;
+}
+.tool-item {
+  margin:5px 0;
+}
+.tool-item button {
+  border-radius:6px;
+  padding:10px 16px;
+  background:linear-gradient(45deg,#aaa,#555);
+}
+
+/* Modal */
+#modal {
+  display:none;
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,0.95);
+  justify-content:center;
+  align-items:center;
+  color:#fff;
+  padding:20px;
+  z-index:1000;
+}
+#modalInner {
+  background:rgba(255,255,255,0.08);
+  padding:20px;
+  border-radius:10px;
+  max-width:700px;
+  max-height:80vh;
+  overflow-y:auto;
+  white-space:pre-wrap;
+}
+#copyBtn {
+  position:absolute;
+  top:8px;
+  right:12px;
+  font-size:20px;
+  cursor:pointer;
+}
+
+/* Loading + toast */
+#loading {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  font-size:18px;
+  font-weight:500;
+  color:#fff;
+  position:absolute;
+  top:0; left:0;
+  width:100%;
+  background:rgba(0,0,0,0.8);
+  z-index:2000;
+}
+#toast {
+  position:fixed;
+  bottom:80px;
+  left:50%;
+  transform:translateX(-50%);
+  background:rgba(0,0,0,0.85);
+  padding:10px 14px;
+  border-radius:8px;
+  display:none;
+  z-index:3000;
+}
+
+/* Footer fixed */
+footer {
+  width:100%;
+  padding:14px;
+  background:rgba(0,0,0,0.9);
+  text-align:center;
+  font-size:14px;
+  color:silver;
+  border-top:1px solid silver;
+  position:fixed;
+  bottom:0;
+  left:0;
+  z-index:1000;
+}
+
+/* Secret admin tap zone */
+#secretZone {
+  position:fixed;
+  bottom:10px;
+  left:10px;
+  width:40px;
+  height:40px;
+  background:transparent;
+}
+</style>
+</head>
+<body>
+<header>ZT Tools</header>
+
+<div id="loading">⏳ Loading...</div>
+
+<div class="container">
+  <!-- Login -->
+  <div id="loginBox">
+    <h2>🔑 Enter Access Code</h2>
+    <input id="passwordInput" type="password" placeholder="Enter access code...">
+    <button id="unlockBtn">🔓 Unlock</button>
+  </div>
+
+  <!-- Tools -->
+  <div id="toolSection" style="display:none;">
+    <h2>🛠 Categories</h2>
+    <div id="categoriesList"></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="modal" onclick="closeModal()">
+  <div id="modalInner" onclick="event.stopPropagation()">
+    <span id="copyBtn" onclick="copyModalText()">📋</span>
+    <div id="modalContent"></div>
+  </div>
+</div>
+<div id="toast"></div>
+<div id="secretZone"></div>
+
+<footer>
+  <p>Developed by Lord Zisky | All rights reserved 2025</p>
+</footer>
+
+<script>
+const BIN_ID="68d55a16d0ea881f408aafef";
+const API_KEY="$2a$10$8MYvRfmBh5FodfOwEg/.vuPsQKggx5z5oD1QLlRCfRfD6396FnBP.";
+const BIN_URL=`https://api.jsonbin.io/v3/b/${BIN_ID}`;
+let binData=null,isLoading=true,tapCount=0,tapTimer=null;
+
+async function loadData(){
+  const loadingEl=document.getElementById('loading');
+  try{
+    const res=await fetch(BIN_URL,{headers:{"X-Master-Key":API_KEY}});
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json=await res.json();
+    binData=json.record;
+    isLoading=false;
+    loadingEl.style.display="none";
+  }catch(e){
+    console.error(e);
+    loadingEl.innerText="❌ Failed to load data: "+e.message;
+  }
+}
+loadData();
+
+document.getElementById("unlockBtn").onclick=()=>{
+  if(isLoading){showToast("⏳ Loading...");return;}
+  const val=document.getElementById("passwordInput").value.trim();
+  if(val===binData.keys.toolkit){
+    document.getElementById("loginBox").style.display="none";
+    document.getElementById("toolSection").style.display="block";
+    renderCategories();
+  }else showToast("❌ Invalid access code!");
+};
+
+function renderCategories(){
+  const c=document.getElementById("categoriesList");c.innerHTML="";
+  binData.categories.forEach(cat=>{
+    const cd=document.createElement("div");cd.className="category";
+    cd.innerHTML=`<span>${cat.name}</span><span>▼</span>`;
+    const td=document.createElement("div");td.className="tools";
+    cat.tools.forEach(tool=>{
+      const btn=document.createElement("button");
+      btn.textContent=tool.name;
+      btn.onclick=(e)=>{
+        e.stopPropagation();
+        if(tool.link) window.open(tool.link,"_blank");
+        else if(tool.content||tool.text) openModal(tool.content||tool.text);
+        else openModal("⚠️ No content.");
+      };
+      td.appendChild(btn);
+    });
+    cd.onclick=()=>td.style.display=td.style.display==="flex"?"none":"flex";
+    c.appendChild(cd);c.appendChild(td);
+  });
+}
+
+function openModal(t){document.getElementById("modalContent").innerText=t;document.getElementById("modal").style.display="flex";}
+function closeModal(){document.getElementById("modal").style.display="none";}
+function copyModalText(){navigator.clipboard.writeText(document.getElementById("modalContent").innerText).then(()=>showToast("✅ Copied"));}
+function showToast(m){const t=document.getElementById("toast");t.textContent=m;t.style.display="block";setTimeout(()=>t.style.display="none",1500);}
+document.getElementById("secretZone").onclick=()=>{tapCount++;clearTimeout(tapTimer);tapTimer=setTimeout(()=>tapCount=0,5000);if(tapCount>=10)location.href="admin.html";};
+</script>
+</body>
+</html>
