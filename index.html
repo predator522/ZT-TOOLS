@@ -1,193 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ZT Tools</title>
 <style>
-html, body {
-  height:100%;
+/* Global */
+html,body{
   margin:0;
   padding:0;
+  height:100%;
   font-family:'Roboto',sans-serif;
-  background: url("https://i.ibb.co/791tz0h/IMG-20250925-WA0413.jpg") no-repeat center center fixed;
+  background:url("https://i.ibb.co/791tz0h/IMG-20250925-WA0413.jpg") no-repeat center center fixed;
   background-size:cover;
   color:#fff;
   overflow-x:hidden;
 }
+body{display:flex;flex-direction:column;min-height:100vh;}
 
-/* container spacing so footer doesn’t overlap */
-body {
-  display:flex;
-  flex-direction:column;
-  min-height:100vh;
-}
-.container {
+/* Container */
+.container{
   flex:1;
-  width:90%;
-  max-width:700px;
-  background:rgba(0,0,0,0.6);
-  padding:25px;
-  border-radius:14px;
-  box-shadow:0 0 20px rgba(192,192,192,0.3);
-  margin:30px auto 100px auto; /* bottom margin so content not hidden */
+  width:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
-/* Header */
-header {
-  width:100%;
-  padding:18px;
-  background:rgba(0,0,0,0.85);
+/* Glass login box */
+#loginBox{
+  background:rgba(0,0,0,0.7);
+  border:1px solid silver;
+  box-shadow:0 0 20px rgba(192,192,192,0.3);
+  border-radius:14px;
+  padding:30px 25px;
+  width:90%;
+  max-width:380px;
   text-align:center;
-  font-size:26px;
+}
+#loginBox h2{
+  margin:0 0 20px;
+  font-size:20px;
   font-weight:700;
   color:silver;
-  text-shadow:0 0 10px #aaa, 0 0 18px #fff;
-  border-bottom:2px solid silver;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
 }
-
-/* Inputs + buttons */
-input, button {
+input{
   width:100%;
   padding:12px;
   margin:10px 0;
-  border-radius:6px;
-  font-size:16px;
-  box-sizing:border-box;
-}
-input {
-  border:2px solid silver;
-  background:rgba(255,255,255,0.1);
+  border-radius:8px;
+  border:1px solid #aaa;
+  font-size:15px;
+  background:rgba(255,255,255,0.08);
   color:#fff;
 }
-input:focus {
+input:focus{
   outline:none;
-  border-color:#ccc;
-  box-shadow:0 0 8px #ccc;
+  border-color:silver;
+  box-shadow:0 0 8px silver;
 }
-button {
+button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:8px;
+  border:none;
+  font-size:16px;
+  cursor:pointer;
   background:linear-gradient(45deg,#555,#aaa);
   color:#fff;
-  border:none;
-  cursor:pointer;
-  font-weight:500;
+  font-weight:600;
   transition:0.3s;
 }
-button:hover {
+button:hover{
   transform:scale(1.05);
-  box-shadow:0 0 10px #aaa;
+  box-shadow:0 0 12px silver;
 }
 
-/* Categories + tools */
-.category {
-  background:rgba(255,255,255,0.1);
-  margin:8px 0;
-  padding:14px 20px;
+/* Categories & Tools */
+#toolSection{
+  width:90%;
+  max-width:700px;
+  margin:20px auto 100px;
+  background:rgba(0,0,0,0.6);
+  padding:20px;
+  border-radius:14px;
+  box-shadow:0 0 20px rgba(192,192,192,0.25);
+}
+.category{
+  background:rgba(255,255,255,0.08);
+  padding:14px 18px;
   border-radius:10px;
+  margin:10px 0;
   cursor:pointer;
   display:flex;
   justify-content:space-between;
   align-items:center;
 }
-.tools {
-  display:none;
-  flex-direction:column;
-  margin-top:8px;
-}
-.tool-item {
+.tools{display:none;flex-direction:column;margin-top:8px;}
+.tool-item button{
   margin:5px 0;
-}
-.tool-item button {
-  border-radius:6px;
-  padding:10px 16px;
   background:linear-gradient(45deg,#aaa,#555);
-}
-
-/* Modal */
-#modal {
-  display:none;
-  position:fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background:rgba(0,0,0,0.95);
-  justify-content:center;
-  align-items:center;
+  border:none;
   color:#fff;
-  padding:20px;
-  z-index:1000;
-}
-#modalInner {
-  background:rgba(255,255,255,0.08);
-  padding:20px;
-  border-radius:10px;
-  max-width:700px;
-  max-height:80vh;
-  overflow-y:auto;
-  white-space:pre-wrap;
-}
-#copyBtn {
-  position:absolute;
-  top:8px;
-  right:12px;
-  font-size:20px;
+  font-weight:500;
+  border-radius:8px;
+  padding:10px;
   cursor:pointer;
 }
+.tool-item button:hover{box-shadow:0 0 8px silver;}
 
-/* Loading + toast */
-#loading {
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-  font-size:18px;
-  font-weight:500;
-  color:#fff;
-  position:absolute;
-  top:0; left:0;
-  width:100%;
-  background:rgba(0,0,0,0.8);
-  z-index:2000;
-}
-#toast {
-  position:fixed;
-  bottom:80px;
-  left:50%;
-  transform:translateX(-50%);
-  background:rgba(0,0,0,0.85);
-  padding:10px 14px;
-  border-radius:8px;
-  display:none;
-  z-index:3000;
-}
+/* Modal */
+#modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.95);justify-content:center;align-items:center;
+  z-index:2000;}
+#modalInner{background:rgba(255,255,255,0.08);padding:20px;border-radius:12px;
+  max-width:700px;max-height:80vh;overflow-y:auto;white-space:pre-wrap;}
+#copyBtn{position:absolute;top:10px;right:14px;cursor:pointer;font-size:20px;}
+
+/* Loading + Toast */
+#loading{display:flex;justify-content:center;align-items:center;height:100vh;
+  font-size:18px;font-weight:500;position:absolute;top:0;left:0;width:100%;
+  background:rgba(0,0,0,0.9);z-index:3000;}
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,0.85);padding:10px 14px;border-radius:8px;display:none;
+  z-index:4000;}
 
 /* Footer fixed */
-footer {
+footer{
   width:100%;
   padding:14px;
   background:rgba(0,0,0,0.9);
   text-align:center;
   font-size:14px;
   color:silver;
-  border-top:1px solid silver;
+  border-top:1px solid rgba(192,192,192,0.4);
   position:fixed;
   bottom:0;
   left:0;
   z-index:1000;
 }
+footer a{color:silver;text-decoration:none;margin:0 5px;}
+footer a:hover{text-decoration:underline;}
 
-/* Secret admin tap zone */
-#secretZone {
-  position:fixed;
-  bottom:10px;
-  left:10px;
-  width:40px;
-  height:40px;
-  background:transparent;
-}
+/* Secret zone */
+#secretZone{position:fixed;bottom:10px;left:10px;width:40px;height:40px;
+  background:transparent;}
 </style>
 </head>
 <body>
-<header>ZT Tools</header>
+<header style="display:none"></header>
 
 <div id="loading">⏳ Loading...</div>
 
@@ -201,7 +167,7 @@ footer {
 
   <!-- Tools -->
   <div id="toolSection" style="display:none;">
-    <h2>🛠 Categories</h2>
+    <h2 style="color:silver">🛠 Categories</h2>
     <div id="categoriesList"></div>
   </div>
 </div>
@@ -217,7 +183,11 @@ footer {
 <div id="secretZone"></div>
 
 <footer>
-  <p>Developed by Lord Zisky | All rights reserved 2025</p>
+  <p>Developed by Lord Zisky | 
+    <a href="https://whatsapp.com/channel/0029Vb6HE4S8vd1KJn6XIO17" target="_blank">WhatsApp</a> | 
+    <a href="https://t.me/ziskytechz" target="_blank">Telegram</a> | 
+    All rights reserved 2025
+  </p>
 </footer>
 
 <script>
@@ -227,17 +197,16 @@ const BIN_URL=`https://api.jsonbin.io/v3/b/${BIN_ID}`;
 let binData=null,isLoading=true,tapCount=0,tapTimer=null;
 
 async function loadData(){
-  const loadingEl=document.getElementById('loading');
   try{
     const res=await fetch(BIN_URL,{headers:{"X-Master-Key":API_KEY}});
     if(!res.ok) throw new Error(`HTTP ${res.status}`);
     const json=await res.json();
     binData=json.record;
     isLoading=false;
-    loadingEl.style.display="none";
+    document.getElementById("loading").style.display="none";
   }catch(e){
     console.error(e);
-    loadingEl.innerText="❌ Failed to load data: "+e.message;
+    document.getElementById("loading").innerText="❌ Failed to load data";
   }
 }
 loadData();
@@ -259,15 +228,15 @@ function renderCategories(){
     cd.innerHTML=`<span>${cat.name}</span><span>▼</span>`;
     const td=document.createElement("div");td.className="tools";
     cat.tools.forEach(tool=>{
-      const btn=document.createElement("button");
-      btn.textContent=tool.name;
+      const div=document.createElement("div");div.className="tool-item";
+      const btn=document.createElement("button");btn.textContent=tool.name;
       btn.onclick=(e)=>{
         e.stopPropagation();
         if(tool.link) window.open(tool.link,"_blank");
         else if(tool.content||tool.text) openModal(tool.content||tool.text);
         else openModal("⚠️ No content.");
       };
-      td.appendChild(btn);
+      div.appendChild(btn);td.appendChild(div);
     });
     cd.onclick=()=>td.style.display=td.style.display==="flex"?"none":"flex";
     c.appendChild(cd);c.appendChild(td);
