@@ -18,6 +18,22 @@ html,body{
 }
 body{display:flex;flex-direction:column;min-height:100vh;}
 
+/* Header */
+header{
+  width:100%;
+  padding:14px;
+  background:rgba(0,0,0,0.6);
+  text-align:center;
+  font-size:20px;
+  font-weight:700;
+  color:silver;
+  border-bottom:1px solid rgba(192,192,192,0.4);
+  position:fixed;
+  top:0;
+  left:0;
+  z-index:1000;
+}
+
 /* Container */
 .container{
   flex:1;
@@ -25,29 +41,23 @@ body{display:flex;flex-direction:column;min-height:100vh;}
   display:flex;
   justify-content:center;
   align-items:center;
+  margin-top:70px;
+  margin-bottom:80px;
 }
 
-/* Glass login box */
-#loginBox{
+/* Glass box */
+.box{
   background:rgba(0,0,0,0.7);
   border:1px solid silver;
-  box-shadow:0 0 20px rgba(192,192,192,0.3);
+  box-shadow:0 0 15px rgba(192,192,192,0.3);
   border-radius:14px;
-  padding:30px 25px;
+  padding:25px 20px;
   width:90%;
-  max-width:380px;
+  max-width:400px;
   text-align:center;
 }
-#loginBox h2{
-  margin:0 0 20px;
-  font-size:20px;
-  font-weight:700;
-  color:silver;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-}
+
+/* Inputs + buttons */
 input{
   width:100%;
   padding:12px;
@@ -114,6 +124,18 @@ button:hover{
 }
 .tool-item button:hover{box-shadow:0 0 8px silver;}
 
+/* Onboarding */
+.step{
+  margin:12px 0;
+}
+.step.done button{
+  background:#2e7d32;
+}
+.step.done button::after{
+  content:" ✔";
+  font-weight:bold;
+}
+
 /* Modal */
 #modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;
   background:rgba(0,0,0,0.95);justify-content:center;align-items:center;
@@ -130,22 +152,20 @@ button:hover{
   background:rgba(0,0,0,0.85);padding:10px 14px;border-radius:8px;display:none;
   z-index:4000;}
 
-/* Footer fixed */
+/* Footer */
 footer{
   width:100%;
-  padding:14px;
-  background:rgba(0,0,0,0.9);
+  padding:10px;
+  background:rgba(0,0,0,0.85);
   text-align:center;
-  font-size:14px;
+  font-size:12px;
   color:silver;
-  border-top:1px solid rgba(192,192,192,0.4);
+  border-top:1px solid rgba(192,192,192,0.3);
   position:fixed;
   bottom:0;
   left:0;
   z-index:1000;
 }
-footer a{color:silver;text-decoration:none;margin:0 5px;}
-footer a:hover{text-decoration:underline;}
 
 /* Secret zone */
 #secretZone{position:fixed;bottom:10px;left:10px;width:40px;height:40px;
@@ -153,13 +173,27 @@ footer a:hover{text-decoration:underline;}
 </style>
 </head>
 <body>
-<header style="display:none"></header>
+<header>ZT Tools</header>
 
 <div id="loading">⏳ Loading...</div>
 
 <div class="container">
+  <!-- Onboarding -->
+  <div id="onboarding" class="box">
+    <h2 style="color:silver">⚡ Welcome to ZT Tools</h2>
+    <div class="step" id="step1">
+      <button onclick="completeStep(1,'https://whatsapp.com/channel/0029Vb6HE4S8vd1KJn6XIO17')">Follow WhatsApp Channel</button>
+    </div>
+    <div class="step" id="step2" style="display:none;">
+      <button onclick="completeStep(2,'https://t.me/ziskytechz')">Join Telegram Channel</button>
+    </div>
+    <div class="step" id="step3" style="display:none;">
+      <button onclick="startApp()">🚀 Explore Tools</button>
+    </div>
+  </div>
+
   <!-- Login -->
-  <div id="loginBox">
+  <div id="loginBox" class="box" style="display:none;">
     <h2>🔑 Enter Access Code</h2>
     <input id="passwordInput" type="password" placeholder="Enter access code...">
     <button id="unlockBtn">🔓 Unlock</button>
@@ -183,11 +217,7 @@ footer a:hover{text-decoration:underline;}
 <div id="secretZone"></div>
 
 <footer>
-  <p>Developed by Lord Zisky | 
-    <a href="https://whatsapp.com/channel/0029Vb6HE4S8vd1KJn6XIO17" target="_blank">WhatsApp</a> | 
-    <a href="https://t.me/ziskytechz" target="_blank">Telegram</a> | 
-    All rights reserved 2025
-  </p>
+  <p>Developed by Lord Zisky | All rights reserved 2025</p>
 </footer>
 
 <script>
@@ -204,12 +234,34 @@ async function loadData(){
     binData=json.record;
     isLoading=false;
     document.getElementById("loading").style.display="none";
+
+    // Auto skip onboarding if already done
+    if(localStorage.getItem("zt_onboardingDone")){
+      document.getElementById("onboarding").style.display="none";
+      document.getElementById("loginBox").style.display="block";
+    }
   }catch(e){
     console.error(e);
     document.getElementById("loading").innerText="❌ Failed to load data";
   }
 }
 loadData();
+
+function completeStep(step,link){
+  window.open(link,"_blank");
+  const el=document.getElementById("step"+step);
+  el.classList.add("done");
+  setTimeout(()=>{
+    if(step===1) document.getElementById("step2").style.display="block";
+    if(step===2) document.getElementById("step3").style.display="block";
+  },2000);
+}
+
+function startApp(){
+  localStorage.setItem("zt_onboardingDone","true");
+  document.getElementById("onboarding").style.display="none";
+  document.getElementById("loginBox").style.display="block";
+}
 
 document.getElementById("unlockBtn").onclick=()=>{
   if(isLoading){showToast("⏳ Loading...");return;}
